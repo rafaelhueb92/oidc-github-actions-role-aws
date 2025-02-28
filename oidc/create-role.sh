@@ -32,7 +32,7 @@ if [[ "$ROLE_EXISTS" == *"NoSuchEntity"* ]]; then
 
 echo "Creating the Trust Policy for the Github Repository $GITHUB_REPO to deploy into the AWS account ID $AWS_ACCOUNT_ID"
 
-trust_policy=$(sed -e "s/AWS_ACCOUNT_ID/$AWS_ACCOUNT_ID/g" -e "s|GITHUB_REPO|$GITHUB_REPO|g" trust-policy.json)
+trust_policy=$(curl -s https://raw.githubusercontent.com/rafaelhueb92/oidc-github-actions-role-aws/refs/heads/master/oidc/trust-policy.json | sed -e "s/AWS_ACCOUNT_ID/$AWS_ACCOUNT_ID/g" -e "s|GITHUB_REPO|$GITHUB_REPO|g")
 
 echo "Creating the role $GITHUB_ACTION_ROLE_NAME"
 
