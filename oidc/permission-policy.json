@@ -1,0 +1,108 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:CreateRestApi",
+        "apigateway:CreateStage",
+        "apigateway:CreateDeployment",
+        "apigateway:PutMethod",
+        "apigateway:PutIntegration",
+        "apigateway:CreateAuthorizer",
+        "apigateway:UpdateRestApi",
+        "apigateway:UpdateStage",
+        "apigateway:UpdateDeployment",
+        "apigateway:DeleteRestApi",
+        "apigateway:DeleteStage",
+        "apigateway:DeleteDeployment",
+        "apigateway:DeleteAuthorizer",
+        "apigateway:TagResource",
+        "apigateway:POST",
+        "apigateway:GET",
+        "apigateway:DELETE"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "cognito-idp:CreateUserPool",
+        "cognito-idp:CreateUserPoolClient",
+        "cognito-idp:AdminCreateUser",
+        "cognito-idp:AdminSetUserPassword",
+        "cognito-idp:ListUserPools",
+        "cognito-idp:ListUsers",
+        "cognito-idp:DescribeUserPool",
+        "cognito-idp:DescribeUserPoolClient",
+        "cognito-idp:DeleteUserPool",
+        "cognito-idp:DeleteUserPoolClient",
+        "cognito-idp:TagResource",
+        "cognito-idp:GetUserPoolMfaConfig",
+        "cognito-idp:AdminGetUser",
+        "cognito-idp:AdminDeleteUser",
+        "cognito-idp:CreateUserPoolDomain",
+        "cognito-idp:DescribeUserPoolDomain",
+        "cognito-idp:SetUICustomization",
+        "cognito-idp:DeleteUserPoolDomain"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "lambda:CreateFunction",
+        "lambda:UpdateFunctionCode",
+        "lambda:UpdateFunctionConfiguration",
+        "lambda:InvokeFunction",
+        "lambda:GetFunction",
+        "lambda:DeleteFunction",
+        "lambda:TagResource",
+        "lambda:CreateEventSourceMapping",
+        "lambda:UpdateEventSourceMapping",
+        "lambda:DeleteEventSourceMapping",
+        "lambda:*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:AttachRolePolicy",
+        "iam:PassRole",
+        "iam:DetachRolePolicy",
+        "iam:DeleteRole",
+        "iam:ListRoles",
+        "iam:GetRole",
+        "iam:TagRole",
+        "iam:ListRolePolicies",
+        "iam:*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:DescribeLogGroups",
+        "logs:DescribeLogStreams",
+        "logs:DeleteLogGroup"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "ssm:*",
+      "Resource": "*"
+    }
+  ]
+}
+
