@@ -4,25 +4,38 @@ GITHUB_REPO="$GIT_HUB_USER_NAME/$GITHUB_REPO_NAME" # use in terminal => export G
 GITHUB_ACTION_ROLE_NAME=GitHubActionsRole-$GITHUB_REPO_NAME
 GITHUB_ACTION_POLICY_NAME=GitHubActionsPolicy-$GITHUB_REPO_NAME
 
+RESPONSE=$(curl -s https://api.github.com/repos/$GITHUB_REPO)
+OWNER_LOGIN=$(echo $RESPONSE | jq -r '.owner.login // empty')
+OWNER_ID=$(echo $RESPONSE | jq -r '.owner.id // empty')
+OWNER_TYPE=$(echo $RESPONSE | jq -r '.owner.type // empty')
+REPO_NAME=$(echo $RESPONSE | jq -r '.name // empty')
+REPO_ID=$(echo $RESPONSE | jq -r '.id // empty')
+
+if [ -z "$OWNER_LOGIN" ] || [ -z "$OWNER_ID" ] || [ -z "$OWNER_TYPE" ] || [ -z "$REPO_NAME" ] || [ -z "$REPO_ID" ]; then
+  echo "Error: could not resolve repository metadata for $GITHUB_REPO from the GitHub API."
+  echo "$RESPONSE"
+  exit 1
+fi
+
+if [ "$OWNER_TYPE" != "User" ] && [ "$OWNER_TYPE" != "Organization" ]; then
+  echo "Error: unexpected owner type '$OWNER_TYPE' for $GITHUB_REPO. Expected 'User' or 'Organization'."
+  exit 1
+fi
+
 echo "AWS Account $AWS_ACCOUNT_ID"
 echo "Repository $GITHUB_REPO"
+echo "Owner Type: $OWNER_TYPE"
 echo "AWS Role $GITHUB_ACTION_ROLE_NAME"
 
 EXISTS=$(aws iam list-open-id-connect-providers | grep -c "token.actions.githubusercontent.com")
 
 if [ "$EXISTS" -eq 0 ]; then
 
-echo "Creating the thumbprint for github"
-
-THUMBPRINT=$(openssl s_client -servername token.actions.githubusercontent.com -showcerts -connect token.actions.githubusercontent.com:443 </dev/null 2>/dev/null | \
-openssl x509 -fingerprint -noout -sha1 | awk -F'=' '{print tolower($2)}' | tr -d ':')
-
 echo "Create the OIDC Provider"
 
 aws iam create-open-id-connect-provider \
   --url https://token.actions.githubusercontent.com \
-  --client-id-list sts.amazonaws.com \
-  --thumbprint-list $THUMBPRINT
+  --client-id-list sts.amazonaws.com
 
 fi
 
@@ -32,7 +45,9 @@ if [[ "$ROLE_EXISTS" == *"NoSuchEntity"* ]]; then
 
 echo "Creating the Trust Policy for the Github Repository $GITHUB_REPO to deploy into the AWS account ID $AWS_ACCOUNT_ID"
 
-trust_policy=$(curl -s https://raw.githubusercontent.com/rafaelhueb92/oidc-github-actions-role-aws/refs/heads/master/oidc/trust-policy.json | sed -e "s/AWS_ACCOUNT_ID/$AWS_ACCOUNT_ID/g" -e "s|GITHUB_REPO|$GITHUB_REPO|g")
+COMPLETE_GITHUB_REPO="$OWNER_LOGIN@$OWNER_ID/$REPO_NAME@$REPO_ID"
+
+trust_policy=$(curl -s https://raw.githubusercontent.com/rafaelhueb92/oidc-github-actions-role-aws/refs/heads/master/oidc/trust-policy.json | sed -e "s/AWS_ACCOUNT_ID/$AWS_ACCOUNT_ID/g" -e "s|GITHUB_REPO|$COMPLETE_GITHUB_REPO|g")
 
 echo "Creating the role $GITHUB_ACTION_ROLE_NAME"
 
