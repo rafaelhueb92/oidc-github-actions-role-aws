@@ -14,15 +14,19 @@ if [ "$EXISTS" -eq 0 ]; then
 
 echo "Creating the thumbprint for github"
 
-THUMBPRINT=$(openssl s_client -servername token.actions.githubusercontent.com -showcerts -connect token.actions.githubusercontent.com:443 </dev/null 2>/dev/null | \
-openssl x509 -fingerprint -noout -sha1 | awk -F'=' '{print tolower($2)}' | tr -d ':')
+#THUMBPRINT=$(openssl s_client -servername token.actions.githubusercontent.com -showcerts -connect token.actions.githubusercontent.com:443 </dev/null 2>/dev/null | \
+#openssl x509 -fingerprint -noout -sha1 | awk -F'=' '{print tolower($2)}' | tr -d ':')
 
 echo "Create the OIDC Provider"
 
+#aws iam create-open-id-connect-provider \
+#  --url https://token.actions.githubusercontent.com \
+#  --client-id-list sts.amazonaws.com \
+#  --thumbprint-list $THUMBPRINT
+
 aws iam create-open-id-connect-provider \
   --url https://token.actions.githubusercontent.com \
-  --client-id-list sts.amazonaws.com \
-  --thumbprint-list $THUMBPRINT
+  --client-id-list sts.amazonaws.com
 
 fi
 
